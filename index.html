@@ -1,59 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Faizaan Lone — Portfolio</title>
-  <meta name="description" content="Faizaan Lone — BSc IT Student, developer, and lifelong learner from Kashmir.">
-  <link rel="icon" type="image/png" href="assets/favicon.png">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faizaan Lone — Developer, Designer, Creator</title>
+  <meta name="description" content="Faizaan Lone — BSc IT Student, developer, and creative builder from Kashmir. View my work, skills, and get in touch." />
+  <meta property="og:title" content="Faizaan Lone — Portfolio" />
+  <meta property="og:description" content="Developer, designer, and creator from Kashmir. Building meaningful digital products." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <!-- Aurora Background Elements -->
-  <div class="aurora-container">
-    <div class="aurora-blob blob-1"></div>
-    <div class="aurora-blob blob-2"></div>
-    <div class="aurora-blob blob-3"></div>
+  <!-- Animated Background Orbs -->
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
   </div>
 
-  <!-- Floating Dock -->
-  <nav class="dock">
-    <ul class="dock-list">
-      <li><a href="#home" class="dock-link active" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></a></li>
-      <li><a href="#about" class="dock-link" aria-label="About"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a></li>
-      <li><a href="#projects" class="dock-link" aria-label="Projects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></a></li>
-      <li><a href="#contact" class="dock-link" aria-label="Contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></a></li>
-    </ul>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#home" class="nav-logo">FL</a>
+      <div class="nav-links" id="navLinks">
+        <a href="#home" class="active">Home</a>
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <a href="#contact" class="nav-cta">Let's Talk</a>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
   </nav>
 
-  <main class="content-wrapper">
+  <!-- Mobile Navigation Overlay -->
+  <div class="mobile-overlay" id="mobileOverlay">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+  </div>
 
-    <!-- HERO SECTION -->
+  <main>
+
+    <!-- HERO -->
     <section id="home" class="hero">
-      <div class="hero-content">
-        <div class="hero-text">
-          <span class="badge reveal">BSc IT · 2nd Year · Kashmir</span>
-          <h1 class="reveal d1">Faizaan<br><em>Lone.</em></h1>
-          <p class="reveal d2">Building modern systems & secure interfaces from the heart of Kashmir.</p>
-          <div class="hero-actions reveal d3">
-            <a href="#projects" class="glass-btn primary">Explore Work</a>
-            <a href="#contact" class="glass-btn secondary">Let's Talk</a>
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <div class="hero-greeting reveal">
+              <span class="greeting-line">Hey, I'm</span>
+            </div>
+            <h1 class="hero-name reveal d1">
+              Faizaan<br><span class="hero-name-accent">Lone.</span>
+            </h1>
+            <div class="hero-roles reveal d2">
+              <span class="role-static">I'm a&nbsp;</span>
+              <span class="role-dynamic" id="roleDynamic">Developer</span>
+            </div>
+            <p class="hero-description reveal d3">
+              A tech-curious student from Kashmir building practical skills across development, design, and systems. I ship real projects, learn by doing, and care deeply about craft.
+            </p>
+            <div class="hero-actions reveal d4">
+              <a href="#projects" class="btn btn-primary">View My Work</a>
+              <a href="#contact" class="btn btn-outline">Get in Touch</a>
+            </div>
           </div>
-        </div>
-        <div class="hero-visual reveal d2">
-          <div class="glass-card hero-card">
-            <div class="card-inner">
-              <img src="assets/photo.png" alt="Faizaan Lone" class="hero-image">
-              <div class="card-overlay">
-                <span class="status-dot"></span>
-                <span>Open for collaboration</span>
+
+          <div class="hero-visual reveal d2">
+            <div class="hero-card" id="heroCard">
+              <div class="hero-card-inner">
+                <img src="assets/photo.png" alt="Faizaan Lone" class="hero-photo" />
+                <div class="hero-card-overlay">
+                  <span class="status-dot"></span>
+                  <span>Open to opportunities</span>
+                </div>
+              </div>
+              <div class="hero-badges">
+                <div class="hero-badge">
+                  <div class="badge-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                  </div>
+                  <div class="badge-text">
+                    <span class="badge-label">Location</span>
+                    <span class="badge-value">Srinagar, Kashmir</span>
+                  </div>
+                </div>
+                <div class="hero-badge">
+                  <div class="badge-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+                  </div>
+                  <div class="badge-text">
+                    <span class="badge-label">Focus</span>
+                    <span class="badge-value">Cybersecurity · Cloud</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -61,144 +116,215 @@
       </div>
     </section>
 
-    <!-- ABOUT & SKILLS BENTO -->
-    <section id="about" class="bento-section">
-      <div class="section-title reveal">
-        <h2>About <em>&</em> Skills</h2>
-      </div>
-      
-      <div class="bento-grid">
-        <!-- Biography Card -->
-        <div class="bento-card bio reveal d1">
-          <h3 class="card-title">Bio</h3>
-          <p>I'm a BSc IT student with a sharp interest in technology at every layer. I enjoy building things that solve real problems, learning tools hands-on, and understanding systems from the inside out.</p>
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-index">01</span>
+          <h2 class="section-title">About Me</h2>
         </div>
-
-        <!-- Skills Card -->
-        <div class="bento-card skills-card reveal d2">
-          <h3 class="card-title">Technologies</h3>
-          <div class="skills-grid">
-            <div class="skill-group">
-              <span class="group-label">Languages & Core</span>
-              <div class="tech-icons">
-                <div class="tech-item" title="C"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg" alt="C"></div>
-                <div class="tech-item" title="Java"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java"></div>
-                <div class="tech-item" title="Python"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python"></div>
-                <div class="tech-item" title="JavaScript"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JS"></div>
-              </div>
-            </div>
-            <div class="skill-group">
-              <span class="group-label">Frontend & Design</span>
-              <div class="tech-icons">
-                <div class="tech-item" title="HTML5"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML5"></div>
-                <div class="tech-item" title="CSS3"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="CSS3"></div>
-                <div class="tech-item" title="React"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React"></div>
-                <div class="tech-item" title="Vite"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg" alt="Vite"></div>
-              </div>
-            </div>
-            <div class="skill-group">
-              <span class="group-label">Cloud & APIs</span>
-              <div class="tech-icons">
-                <div class="tech-item" title="Firebase"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg" alt="Firebase"></div>
-                <div class="tech-item" title="Node.js"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="NodeJS"></div>
-                <div class="tech-item" title="REST APIs"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jsonwebtokens/jsonwebtokens-original.svg" alt="API"></div>
-                <div class="tech-item" title="Google Gemini"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg" alt="Gemini"></div>
-              </div>
-            </div>
-            <div class="skill-group">
-              <span class="group-label">Development Tools</span>
-              <div class="tech-icons">
-                <div class="tech-item" title="Git"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" alt="Git"></div>
-                <div class="tech-item" title="GitHub"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub"></div>
-                <div class="tech-item" title="Vercel"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg" alt="Vercel"></div>
-                <div class="tech-item" title="VS Code"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VSCode"></div>
-                <div class="tech-item" title="Docker"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="Docker"></div>
-              </div>
-            </div>
-            <div class="skill-group">
-              <span class="group-label">Creative & Browser</span>
-              <div class="tech-icons">
-                <div class="tech-item" title="Photoshop"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-plain.svg" alt="PS"></div>
-                <div class="tech-item" title="Premiere Pro"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/premierepro/premierepro-plain.svg" alt="Premiere"></div>
-                <div class="tech-item" title="Chrome"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" alt="Chrome"></div>
-                <div class="tech-item" title="Brave"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/brave/brave-original.svg" alt="Brave"></div>
-              </div>
+        <div class="about-grid">
+          <div class="about-content">
+            <p class="about-text reveal d1">
+              I'm Faizaan — a BSc IT student with a sharp interest in how technology works at every layer. I enjoy building things that solve real problems, learning tools hands-on, and understanding systems from the inside out.
+            </p>
+            <p class="about-text reveal d2">
+              My focus right now is sharpening practical development skills and building a portfolio that speaks for itself. I believe in shipping, iterating, and learning from doing rather than waiting to be ready.
+            </p>
+            <p class="about-text reveal d3">
+              Looking for opportunities where I can contribute meaningfully, grow fast, and work alongside people who care about craft.
+            </p>
+            <div class="about-traits reveal d4">
+              <span class="trait-chip">Problem Solver</span>
+              <span class="trait-chip">Fast Learner</span>
+              <span class="trait-chip">Detail-Oriented</span>
+              <span class="trait-chip">Team Player</span>
             </div>
           </div>
-        </div>
-
-        <!-- Stats Bento Cards -->
-        <div class="bento-card stat reveal d3">
-          <span class="stat-val">2nd</span>
-          <span class="stat-lbl">Year BSc IT</span>
-        </div>
-        <div class="bento-card stat reveal d4">
-          <span class="stat-val">10+</span>
-          <span class="stat-lbl">Tools Mastered</span>
+          <div class="about-stats reveal d2">
+            <div class="stat-card">
+              <div><span class="stat-number" data-target="2">0</span><span class="stat-suffix">nd</span></div>
+              <div class="stat-label">Year · BSc IT</div>
+            </div>
+            <div class="stat-card">
+              <div><span class="stat-number" data-target="10">0</span><span class="stat-suffix">+</span></div>
+              <div class="stat-label">Tools Worked With</div>
+            </div>
+            <div class="stat-card">
+              <div><span class="stat-number-symbol">∞</span></div>
+              <div class="stat-label">Things to Learn</div>
+            </div>
+            <div class="stat-card">
+              <div><span class="stat-number" data-target="1">0</span></div>
+              <div class="stat-label">Clear Direction</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- PROJECTS SHOWCASE -->
-    <section id="projects" class="projects">
-      <div class="section-title reveal">
-        <h2>Selected <em>Projects</em></h2>
-      </div>
-
-      <div class="project-showcase">
-        <!-- Project Item -->
-        <article class="project-item reveal">
-          <div class="project-info">
-            <span class="project-num">01</span>
-            <h3 class="project-name">SPCS Campus Portal</h3>
-            <p>A modern campus experience built for Sri Pratap College. Rethinking student journeys through organized interfaces and focused flows.</p>
-            <div class="project-tags">
-              <span>UI Design</span>
-              <span>Mobile-First</span>
-              <span>Campus Portal</span>
+    <!-- SKILLS -->
+    <section id="skills">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-index">02</span>
+          <h2 class="section-title">Skills & Tools</h2>
+        </div>
+        <p class="section-subtitle reveal d1">
+          Technologies and tools I work with — focused, practical, and always growing.
+        </p>
+        <div class="skills-bento">
+          <div class="skill-category reveal d1">
+            <div class="skill-cat-header">
+              <div class="skill-cat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </div>
+              <h3 class="skill-cat-title">Languages</h3>
             </div>
-            <a href="https://spcscampuscollege.vercel.app/" target="_blank" class="project-link">View Project →</a>
+            <div class="skill-chips">
+              <span class="skill-chip">C</span>
+              <span class="skill-chip">Java</span>
+              <span class="skill-chip">Python</span>
+            </div>
+          </div>
+          <div class="skill-category reveal d2">
+            <div class="skill-cat-header">
+              <div class="skill-cat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </div>
+              <h3 class="skill-cat-title">Web</h3>
+            </div>
+            <div class="skill-chips">
+              <span class="skill-chip">HTML & CSS</span>
+              <span class="skill-chip">JavaScript</span>
+              <span class="skill-chip">Responsive Design</span>
+            </div>
+          </div>
+          <div class="skill-category reveal d3">
+            <div class="skill-cat-header">
+              <div class="skill-cat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              </div>
+              <h3 class="skill-cat-title">Tools & DevOps</h3>
+            </div>
+            <div class="skill-chips">
+              <span class="skill-chip">Docker</span>
+              <span class="skill-chip">Git & GitHub</span>
+              <span class="skill-chip">VS Code</span>
+              <span class="skill-chip">Linux</span>
+            </div>
+          </div>
+          <div class="skill-category reveal d4">
+            <div class="skill-cat-header">
+              <div class="skill-cat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/></svg>
+              </div>
+              <h3 class="skill-cat-title">Exploring</h3>
+            </div>
+            <div class="skill-chips">
+              <span class="skill-chip">Cybersecurity</span>
+              <span class="skill-chip">Google Cloud</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-index">03</span>
+          <h2 class="section-title">Projects</h2>
+        </div>
+        <p class="section-subtitle reveal d1">
+          A growing set of hands-on builds where I design interfaces, shape user flows, and turn ideas into working products.
+        </p>
+
+        <article class="project-featured reveal d2">
+          <div class="project-gallery">
+            <div class="gallery-main">
+              <img src="assets/project-spcs-home.jpg" alt="SPCS Campus Portal home screen" id="galleryMainImg" />
+            </div>
+            <div class="gallery-thumbs">
+              <img src="assets/project-spcs-home.jpg" alt="Home screen" class="active" data-full="assets/project-spcs-home.jpg" />
+              <img src="assets/project-spcs-posts.jpg" alt="Student posts" data-full="assets/project-spcs-posts.jpg" />
+              <img src="assets/project-spcs-alumni.jpg" alt="Alumni network" data-full="assets/project-spcs-alumni.jpg" />
+            </div>
+          </div>
+          <div class="project-featured-info">
+            <span class="project-label">Featured Project</span>
+            <h3 class="project-title">SPCS Campus Portal</h3>
+            <p class="project-desc">
+              A modern campus experience built for Sri Pratap College that rethinks the student journey — departments, live campus posts, alumni networking, and secure admin access in one mobile-first interface.
+            </p>
+            <div class="project-tech">
+              <span class="tech-tag">UI Design</span>
+              <span class="tech-tag">Mobile-First</span>
+              <span class="tech-tag">Campus Portal</span>
+              <span class="tech-tag">Case Study</span>
+            </div>
+            <div class="project-impact">
+              <div class="impact-item">
+                <span class="impact-label">Highlights</span>
+                <p>Landing experience, live posts flow, alumni network, and admin portal concept — all designed with clean visual hierarchy and focused UX.</p>
+              </div>
+            </div>
+            <div class="project-links">
+              <a href="https://spcscampuscollege.vercel.app/" target="_blank" rel="noopener" class="btn btn-primary">View Live ↗</a>
+              <a href="#contact" class="btn btn-outline">Discuss This →</a>
+            </div>
           </div>
         </article>
+
+        <div class="projects-coming reveal d3">
+          <p class="coming-text">More projects are on the way.</p>
+          <p class="coming-subtext">I'm always building — check back soon or connect to follow my work.</p>
+        </div>
       </div>
     </section>
 
-    <!-- CONTACT SECTION -->
-    <section id="contact" class="contact">
-      <div class="glass-card contact-card reveal">
-        <div class="contact-header">
-          <h2>Get in <em>Touch.</em></h2>
-          <p>Open to opportunities, collaborations, or a tech conversation.</p>
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-index">04</span>
+          <h2 class="section-title contact-title">Let's Work Together</h2>
         </div>
-        
-        <div class="contact-grid">
-          <form class="contact-form">
-            <div class="input-group">
-              <input type="text" placeholder="Name" required>
+        <p class="section-subtitle reveal d1">
+          Open to opportunities, collaborations, or a good tech conversation. Let's connect.
+        </p>
+        <div class="contact-cards reveal d2">
+          <a href="mailto:faizanlone098@gmail.com" class="contact-card" id="contact-email">
+            <div class="contact-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             </div>
-            <div class="input-group">
-              <input type="email" placeholder="Email" required>
+            <div class="contact-card-content">
+              <span class="contact-label">Email</span>
+              <span class="contact-value">faizanlone098@gmail.com</span>
             </div>
-            <div class="input-group">
-              <textarea placeholder="Message" rows="4" required></textarea>
+            <span class="contact-arrow">→</span>
+          </a>
+          <a href="https://github.com/lonefaizaan" target="_blank" rel="noopener" class="contact-card" id="contact-github">
+            <div class="contact-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
             </div>
-            <button type="submit" class="glass-btn primary">Send Message</button>
-          </form>
-
-          <div class="contact-socials">
-            <a href="mailto:faizanlone098@gmail.com" class="social-item">
-              <span class="s-label">Email</span>
-              <span class="s-val">faizanlone098@gmail.com</span>
-            </a>
-            <a href="https://github.com/lonefaizaan" target="_blank" class="social-item">
-              <span class="s-label">GitHub</span>
-              <span class="s-val">lonefaizaan</span>
-            </a>
-            <a href="https://linkedin.com/in/lonefaizaan" target="_blank" class="social-item">
-              <span class="s-label">LinkedIn</span>
-              <span class="s-val">lonefaizaan</span>
-            </a>
-          </div>
+            <div class="contact-card-content">
+              <span class="contact-label">GitHub</span>
+              <span class="contact-value">lonefaizaan</span>
+            </div>
+            <span class="contact-arrow">→</span>
+          </a>
+          <a href="https://linkedin.com/in/lonefaizaan" target="_blank" rel="noopener" class="contact-card" id="contact-linkedin">
+            <div class="contact-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            </div>
+            <div class="contact-card-content">
+              <span class="contact-label">LinkedIn</span>
+              <span class="contact-value">lonefaizaan</span>
+            </div>
+            <span class="contact-arrow">→</span>
+          </a>
         </div>
       </div>
     </section>
@@ -206,7 +332,10 @@
   </main>
 
   <footer class="footer">
-    <p>© 2025 Faizaan Lone — Kashmir</p>
+    <div class="container">
+      <span class="footer-copy">© 2025 Faizaan Lone</span>
+      <a href="#home" class="footer-back">Back to top ↑</a>
+    </div>
   </footer>
 
   <script src="js/main.js"></script>
