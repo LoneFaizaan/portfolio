@@ -1,6 +1,6 @@
 /* ============================================================
    Faizaan Lone — Portfolio Main JS
-   Premium dark-themed personal brand experience
+   Apple-Inspired · Photography-First · 2025
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================
      2. NAVIGATION BEHAVIOR
   ========================================================== */
-  const navbar = document.querySelector('#navbar');
+  const navbar = document.querySelector('#globalNav');
   const navLinks = document.querySelectorAll('.nav-links a');
   const navHamburger = document.querySelector('#navHamburger');
   const mobileOverlay = document.querySelector('#mobileOverlay');
@@ -45,31 +45,17 @@ document.addEventListener('DOMContentLoaded', () => {
   let lastScrollY = window.scrollY;
   let ticking = false;
 
-  /* --- 2a. Hide / Show on scroll + Glass intensify --------- */
+  /* --- 2a. Hide / Show on scroll ----------------------------- */
   const handleNavScroll = () => {
     const currentScrollY = window.scrollY;
 
-    // Scrolled state (shadow / glass base)
     if (navbar) {
-      if (currentScrollY > 50) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
-      }
-
       // Hide on scroll-down, show on scroll-up
       if (currentScrollY > 100 && currentScrollY > lastScrollY) {
         navbar.classList.add('hidden');
       } else {
         navbar.classList.remove('hidden');
       }
-
-      /* --- 9. Glass intensify: blur 0→20px over first 300px --- */
-      const maxScroll = 300;
-      const scrollRatio = Math.min(currentScrollY / maxScroll, 1);
-      const blurValue = scrollRatio * 20;
-      navbar.style.backdropFilter = `blur(${blurValue}px)`;
-      navbar.style.webkitBackdropFilter = `blur(${blurValue}px)`;
     }
 
     lastScrollY = currentScrollY;
@@ -87,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { passive: true }
   );
 
-  /* --- 2b. Active section highlighting --------------------- */
+  /* --- 2b. Active section highlighting ----------------------- */
   if (sections.length && navLinks.length) {
     const sectionObserver = new IntersectionObserver(
       (entries) => {
@@ -103,13 +89,13 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       },
-      { threshold: 0.3, rootMargin: '-80px 0px 0px 0px' }
+      { threshold: 0.3, rootMargin: '-44px 0px 0px 0px' }
     );
 
     sections.forEach((section) => sectionObserver.observe(section));
   }
 
-  /* --- 2c. Mobile menu toggle ------------------------------ */
+  /* --- 2c. Mobile menu toggle -------------------------------- */
   const closeMobileMenu = () => {
     if (navHamburger) navHamburger.classList.remove('active');
     if (mobileOverlay) mobileOverlay.classList.remove('active');
@@ -133,41 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================
-     3. HERO PHOTO TILT EFFECT
-  ========================================================== */
-  const heroCard = document.querySelector('#heroCard');
-
-  if (heroCard) {
-    const maxTilt = 8; // degrees
-
-    heroCard.addEventListener(
-      'mousemove',
-      (e) => {
-        const rect = heroCard.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const mouseX = e.clientX - centerX;
-        const mouseY = e.clientY - centerY;
-
-        // Normalise to –1 … 1 then scale to maxTilt
-        const rotateY = (mouseX / (rect.width / 2)) * maxTilt;
-        const rotateX = -(mouseY / (rect.height / 2)) * maxTilt;
-
-        heroCard.style.transition = 'transform 0.1s ease-out';
-        heroCard.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
-      },
-      { passive: true }
-    );
-
-    heroCard.addEventListener('mouseleave', () => {
-      heroCard.style.transition = 'transform 0.5s ease-out';
-      heroCard.style.transform =
-        'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
-    });
-  }
-
-  /* ==========================================================
-     4. ROLE TEXT CYCLING
+     3. ROLE TEXT CYCLING
   ========================================================== */
   const roleDynamic = document.querySelector('#roleDynamic');
 
@@ -178,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cycleRole = () => {
       // Fade out
       roleDynamic.style.opacity = '0';
-      roleDynamic.style.transform = 'translateY(-10px)';
+      roleDynamic.style.transform = 'translateY(-8px)';
 
       setTimeout(() => {
         roleIndex = (roleIndex + 1) % roles.length;
@@ -187,10 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fade in
         roleDynamic.style.opacity = '1';
         roleDynamic.style.transform = 'translateY(0)';
-      }, 300); // wait for fade-out transition
+      }, 300);
     };
 
-    // Ensure the element has transitions for opacity & transform
+    // Ensure transitions
     roleDynamic.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
     roleDynamic.style.display = 'inline-block';
 
@@ -198,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================
-     5. STAT COUNTER ANIMATION
+     4. STAT COUNTER ANIMATION
   ========================================================== */
   const statNumbers = document.querySelectorAll('.stat-number[data-target]');
 
@@ -207,14 +159,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const target = parseInt(el.dataset.target, 10);
       if (isNaN(target)) return;
 
-      const duration = 1500; // ms
+      const duration = 1500;
       const startTime = performance.now();
 
       const step = (now) => {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
 
-        // Ease-out quad for a smooth ramp
+        // Ease-out quad
         const eased = 1 - (1 - progress) * (1 - progress);
         el.textContent = Math.round(eased * target);
 
@@ -244,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================
-     6. SMOOTH SCROLL (anchor links)
+     5. SMOOTH SCROLL (anchor links)
   ========================================================== */
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener('click', (e) => {
@@ -256,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       e.preventDefault();
 
-      const offset = 80; // fixed navbar height
+      const offset = 44; // global nav height
       const top =
         targetEl.getBoundingClientRect().top + window.scrollY - offset;
 
@@ -265,35 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ==========================================================
-     7. BACKGROUND ORB PARALLAX
-  ========================================================== */
-  if (!isTouchDevice()) {
-    const orbs = document.querySelectorAll('.orb');
-
-    if (orbs.length) {
-      document.addEventListener(
-        'mousemove',
-        (e) => {
-          const { clientX, clientY } = e;
-          const centerX = window.innerWidth / 2;
-          const centerY = window.innerHeight / 2;
-
-          orbs.forEach((orb, index) => {
-            const speed = (index + 1) * 15;
-            const x = ((clientX - centerX) / centerX) * speed;
-            const y = ((clientY - centerY) / centerY) * speed;
-
-            orb.style.willChange = 'transform';
-            orb.style.transform = `translate(${x}px, ${y}px)`;
-          });
-        },
-        { passive: true }
-      );
-    }
-  }
-
-  /* ==========================================================
-     8. PROJECT GALLERY
+     6. PROJECT GALLERY
   ========================================================== */
   const galleryMainImg = document.querySelector('#galleryMainImg');
   const galleryThumbs = document.querySelectorAll('.gallery-thumbs img');
