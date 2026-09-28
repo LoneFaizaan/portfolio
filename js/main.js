@@ -35,7 +35,7 @@ const safe = (name, fn, onFail) => {
 };
 
 function revealAll() {
-  gsap.set('[data-reveal], [data-stagger] > *, [data-hero-fade]', { autoAlpha: 1 });
+  gsap.set('[data-reveal], [data-stagger] > *, [data-hero-fade]', { autoAlpha: 1, clearProps: 'transform' });
   gsap.set('[data-split], [data-lines], .hero__title', { visibility: 'visible' });
 }
 
@@ -85,28 +85,32 @@ async function start() {
 
   await withTimeout(document.fonts ? document.fonts.ready : Promise.resolve(), 3500);
 
-  // ScrollTriggers are created in page order; the pinned work section goes first
-  // so every trigger below it is measured with the pin spacing in place.
-  safe('work', setupWork);
+  // ScrollTriggers are created in page order; the pinned sections go first
+  // (top to bottom) so every trigger below them is measured with the pin
+  // spacing in place.
+  const depth = safe('depth', () => setupDepth(lenis), () => $('.depth')?.classList.remove('is-3d'));
+  safe('work', () => setupWork(lenis));
   const heroChars = safe('hero', prepareHero, revealAll) || [];
   safe('manifesto', setupManifesto);
   safe('reveals', setupReveals, revealAll);
   safe('counters', setupCounters);
   safe('tapes', () => setupTapes(lenis));
   safe('holo', setupHolo);
+  safe('tilt cards', setupTiltCards);
   const sphere = safe('sphere', setupSphere);
   safe('nav state', setupNavState);
   safe('footer', setupFooter);
   safe('progress', setupProgress);
+  safe('drum', setupDrum);
 
   const scene = await withTimeout(scenePromise, 4000);
   if (scene) {
-    safe('scene wiring', () => wireScene(scene, lenis, sphere));
+    safe('scene wiring', () => wireScene(scene, lenis, sphere, depth));
   } else {
     // slow connection: don't hold the page, fade the world in whenever it arrives
     scenePromise.then((late) => {
       if (!late) return;
-      safe('scene wiring', () => wireScene(late, lenis, sphere));
+      safe('scene wiring', () => wireScene(late, lenis, sphere, depth));
       late.intro();
     });
   }
@@ -156,8 +160,9 @@ async function loadScene() {
   }
 }
 
-function wireScene(scene, lenis, sphere) {
+function wireScene(scene, lenis, sphere, depth) {
   if (sphere) scene.setSphereMatrix(sphere.getMatrix);
+  if (depth) scene.setTunnelTravel(depth.getTravel);
 
   let raf = 0;
   window.addEventListener('resize', () => {
@@ -261,16 +266,43 @@ function prepareHero() {
   title.setAttribute('aria-label', 'Faizaan Lone');
   root.classList.add('is-intro');
 
-  // parallax out: the two lines drift apart as the valley scrolls away
+  // parallax out: the two lines drift apart and tip back into the valley
+  gsap.set('.hero__line', { transformPerspective: 1100, transformOrigin: '50% 100%' });
   gsap.timeline({
     scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
   })
-    .to('.hero__line--1', { yPercent: -70, ease: 'none' }, 0)
-    .to('.hero__line--2', { yPercent: -28, ease: 'none' }, 0)
+    .to('.hero__line--1', { yPercent: -70, rotationX: 48, z: -160, ease: 'none' }, 0)
+    .to('.hero__line--2', { yPercent: -28, rotationX: 30, z: -80, ease: 'none' }, 0)
     .to('.hero__main', { opacity: 0, ease: 'power1.in' }, 0)
     .to('.hero__top, .hero__bottom', { opacity: 0, y: -60, ease: 'none' }, 0);
 
+  setupHeroTilt(title);
   return split.chars;
+}
+
+// The name leans toward the pointer; its two lines slide apart in depth.
+function setupHeroTilt(title) {
+  if (!finePointer) return;
+  const hero = $('.hero');
+  const lines = $$('.hero__line', title);
+  let visible = true;
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(hero);
+  const tgt = { x: 0, y: 0 };
+  const cur = { x: 0, y: 0 };
+  const lineX = lines.map((line) => gsap.quickTo(line, 'x', { duration: 1.1, ease: 'power3.out' }));
+  window.addEventListener('pointermove', (e) => {
+    tgt.x = (e.clientX / window.innerWidth) * 2 - 1;
+    tgt.y = (e.clientY / window.innerHeight) * 2 - 1;
+    if (!visible) return;
+    lineX.forEach((to, i) => to(tgt.x * (i ? 16 : -10)));
+  }, { passive: true });
+  gsap.ticker.add(() => {
+    if (!visible) return;
+    cur.x += (tgt.x - cur.x) * 0.06;
+    cur.y += (tgt.y - cur.y) * 0.06;
+    title.style.transform =
+      `perspective(1400px) rotateX(${(-cur.y * 5).toFixed(2)}deg) rotateY(${(cur.x * 7).toFixed(2)}deg)`;
+  });
 }
 
 function heroIntro(chars, scene) {
@@ -308,12 +340,120 @@ function startRotator() {
 }
 
 /* --------------------------------------------------------------------------
+   Approach — the section pins and scrolling flies the camera through depth.
+   Each principle waits further into the screen inside its own portal frame;
+   the WebGL world turns into a tunnel around it (see scene.js).
+   -------------------------------------------------------------------------- */
+function setupDepth(lenis) {
+  const section = $('.depth');
+  if (!section || reduced) return null;
+  const items = $$('.depth__item', section);
+  const frames = $$('.depth__frames i', section);
+  const current = $('.depth__current', section);
+  const total = $('.depth__total', section);
+  const bar = $('.depth__bar span', section);
+  const n = items.length;
+  if (n < 2) return null;
+
+  section.classList.add('is-3d');
+  if (total) total.textContent = String(n).padStart(2, '0');
+
+  const GAP = 1250;    // px of depth between principles
+  const PERSP = 1000;  // matches the CSS perspective on the list
+  const START = -0.55; // the first principle waits a little way ahead
+  const sides = items.map((el) => Number(el.dataset.side) || 0);
+  const blur = !small;
+  let spread = 0;
+  let target = 0;
+  let shown = 0;
+  let travel = START;
+  let active = -1;
+  let inView = false;
+
+  const measure = () => {
+    spread = window.innerWidth >= 900 ? Math.min(window.innerWidth * 0.1, 170) : 0;
+  };
+  measure();
+
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: () => `+=${Math.round(window.innerHeight * n * 0.8)}`,
+    pin: true,
+    anticipatePin: 1,
+    invalidateOnRefresh: true,
+    onRefresh: measure,
+    onUpdate: (self) => { target = self.progress; },
+  });
+  new IntersectionObserver(([e]) => { inView = e.isIntersecting; }).observe(section);
+
+  // dwell on each principle, then glide on to the next
+  const dwell = (s) => {
+    const i = Math.floor(s);
+    return i + smoothstep(0.12, 0.88, s - i);
+  };
+
+  const render = () => {
+    travel = dwell(START + (n - 1 - START) * clamp(shown / 0.94, 0, 1));
+    items.forEach((el, i) => {
+      const d = travel - i; // 0 in focus · < 0 still ahead · > 0 flown past
+      // the next principle stays a faint hint until the current one departs
+      const o = smoothstep(-1.15, -0.35, d) * (1 - smoothstep(0.1, 0.5, d));
+      if (o < 0.005) {
+        el.style.visibility = 'hidden';
+        return;
+      }
+      const z = Math.min(d * GAP, PERSP * 0.8);
+      const turn = -sides[i] * clamp(d, -1, 1) * 10;
+      el.style.visibility = 'visible';
+      el.style.opacity = o.toFixed(3);
+      el.style.zIndex = String(100 - Math.round(Math.abs(d) * 10));
+      el.style.transform = `translate3d(${(sides[i] * spread).toFixed(1)}px, 0, ${z.toFixed(1)}px) rotateY(${turn.toFixed(2)}deg)`;
+      // depth of field: only the principle in focus is sharp
+      if (blur) {
+        const b = Math.min(8, Math.max(0, Math.abs(d) - 0.08) * 7);
+        el.style.filter = b > 0.05 ? `blur(${b.toFixed(1)}px)` : 'none';
+      }
+    });
+    frames.forEach((el, k) => {
+      const d = travel - k;
+      const o = smoothstep(-3.4, -0.8, d) * (1 - smoothstep(0.15, 0.62, d));
+      if (o < 0.005) {
+        el.style.visibility = 'hidden';
+        return;
+      }
+      el.style.visibility = 'visible';
+      el.style.opacity = o.toFixed(3);
+      el.style.transform = `translate3d(0, 0, ${Math.min(d * GAP, PERSP * 0.85).toFixed(1)}px)`;
+    });
+    const a = clamp(Math.round(travel), 0, n - 1);
+    if (a !== active) {
+      active = a;
+      if (current) current.textContent = String(a + 1).padStart(2, '0');
+    }
+    if (bar) bar.style.transform = `scaleX(${shown.toFixed(4)})`;
+  };
+  render();
+
+  gsap.ticker.add(() => {
+    if (!inView && Math.abs(target - shown) < 0.0005) return;
+    // ease toward the scroll position at the same pace whatever the frame rate
+    const k = 1 - Math.pow(1 - (lenis ? 0.2 : 0.14), gsap.ticker.deltaRatio(60));
+    shown += (target - shown) * k;
+    if (Math.abs(target - shown) < 0.0001) shown = target;
+    render();
+  });
+
+  return { getTravel: () => travel };
+}
+
+/* --------------------------------------------------------------------------
    Scroll reveals
    -------------------------------------------------------------------------- */
 function setupReveals() {
   if (reduced) return;
 
-  // headings: characters rise out of line masks, then the split is undone
+  // headings: characters flip up out of line masks, then the split is undone
   $$('[data-split]').forEach((el) => {
     let split = null;
     split = SplitText.create(el, {
@@ -328,11 +468,15 @@ function setupReveals() {
       onSplit(self) {
         gsap.set(el, { visibility: 'visible' });
         return gsap.from(self.chars, {
-          yPercent: 125,
-          rotate: 8,
-          duration: 1.25,
+          yPercent: 90,
+          rotationX: -95,
+          z: -40,
+          transformPerspective: 520,
+          transformOrigin: '50% 100%',
+          opacity: 0,
+          duration: 1.35,
           ease: 'expo.out',
-          stagger: 0.016,
+          stagger: 0.018,
           scrollTrigger: { trigger: el, start: 'top 86%', once: true },
           onComplete: () => requestAnimationFrame(() => split?.revert()),
         });
@@ -365,18 +509,84 @@ function setupReveals() {
   });
 
   $$('[data-reveal]').forEach((el) => {
-    gsap.fromTo(el, { autoAlpha: 0, y: 44 }, {
-      autoAlpha: 1, y: 0, duration: 1.35, ease: 'expo.out',
+    gsap.fromTo(el, { autoAlpha: 0, y: 44, rotationX: -22, transformPerspective: 1200, transformOrigin: '50% 0%' }, {
+      autoAlpha: 1, y: 0, rotationX: 0, duration: 1.35, ease: 'expo.out',
       scrollTrigger: { trigger: el, start: 'top 90%', once: true },
     });
   });
 
+  // groups: each child flips up off the floor, one after another
   $$('[data-stagger]').forEach((el) => {
-    gsap.fromTo(el.children, { autoAlpha: 0, y: 38 }, {
-      autoAlpha: 1, y: 0, duration: 1.2, ease: 'expo.out', stagger: 0.08,
+    gsap.fromTo(el.children, {
+      autoAlpha: 0, y: 40, z: -120, rotationX: -62, transformPerspective: 1000, transformOrigin: '50% 100%',
+    }, {
+      autoAlpha: 1, y: 0, z: 0, rotationX: 0, duration: 1.3, ease: 'expo.out', stagger: 0.085,
       scrollTrigger: { trigger: el, start: 'top 88%', once: true },
     });
   });
+}
+
+/* --------------------------------------------------------------------------
+   Perspective scroll — blocks curve up from below and tip away at the top,
+   as if the page were wrapped around a slowly turning drum. Flat mid-screen.
+   -------------------------------------------------------------------------- */
+function setupDrum() {
+  if (reduced) return;
+  const items = $$('[data-drum]').map((el) => ({ el, top: 0, h: 0, amp: 1, flat: false }));
+  if (!items.length) return;
+  const MAX = small ? 9 : 15; // degrees at the viewport edges
+  let vh = window.innerHeight;
+  let maxScroll = 0;
+
+  const render = () => {
+    const y = window.scrollY;
+    for (const it of items) {
+      const c = it.top + it.h * 0.5 - y; // centre in viewport px
+      if (c < -it.h || c > vh + it.h) continue;
+      // blocks near the end of the page may never reach mid-screen:
+      // make sure they land flat by the time the scroll bottoms out
+      const flat = Math.min(vh * 0.62, it.top + it.h * 0.5 - maxScroll);
+      const eIn = smoothstep(flat, Math.max(flat + 1, vh + it.h * 0.5), c);
+      const eOut = smoothstep(vh * 0.3, -it.h * 0.5, c);
+      if (eIn + eOut < 0.001) {
+        if (!it.flat) {
+          it.el.style.transform = '';
+          it.el.style.opacity = '';
+          it.flat = true;
+        }
+        continue;
+      }
+      it.flat = false;
+      const k = it.amp;
+      const rx = (eOut - eIn) * MAX * k;
+      const z = -(eIn + eOut) * 170 * k;
+      const ty = (eIn * 48 - eOut * 24) * k;
+      it.el.style.transform = `perspective(1200px) translate3d(0, ${ty.toFixed(1)}px, ${z.toFixed(1)}px) rotateX(${rx.toFixed(2)}deg)`;
+      it.el.style.opacity = (1 - (eIn * 0.3 + eOut * 0.45) * k).toFixed(3);
+    }
+  };
+
+  // positions are read with the transforms off, whenever the layout settles
+  const measure = () => {
+    vh = window.innerHeight;
+    const y = window.scrollY;
+    for (const it of items) it.el.style.transform = '';
+    for (const it of items) {
+      const r = it.el.getBoundingClientRect();
+      it.top = r.top + y;
+      it.h = r.height;
+      it.amp = clamp(1.25 - it.h / vh, 0.35, 1); // tall blocks tilt less
+      it.flat = false;
+    }
+    maxScroll = ScrollTrigger.maxScroll(window);
+    render();
+  };
+  ScrollTrigger.addEventListener('refreshInit', () => {
+    for (const it of items) it.el.style.transform = '';
+  });
+  ScrollTrigger.addEventListener('refresh', measure);
+  measure();
+  gsap.ticker.add(render);
 }
 
 function setupManifesto() {
@@ -436,6 +646,15 @@ function setupTapes(lenis) {
     return it;
   });
 
+  // the two ribbons twist through depth as they cross the screen
+  const twist = (el, from, to) => gsap.fromTo(el, { x: 0, y: 0, yPercent: -50, transformPerspective: 1000, ...from }, {
+    x: 0, y: 0, yPercent: -50, ...to,
+    ease: 'none',
+    scrollTrigger: { trigger: '.tapes', start: 'top bottom', end: 'bottom top', scrub: true },
+  });
+  twist($('.tape--a'), { rotation: -7, rotationX: 38 }, { rotation: -1.5, rotationX: -34 });
+  twist($('.tape--b'), { rotation: 6.5, rotationX: -32 }, { rotation: 1, rotationX: 36 });
+
   let direction = 1;
   let boost = 0;
   let skew = 0;
@@ -466,6 +685,7 @@ function setupHolo() {
   const tgt = { rx: 0, ry: 0, mx: 0, my: 0 };
   let hovering = false;
   let visible = false;
+  let scrollTurn = 0;
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(holo);
 
   if (finePointer) {
@@ -491,12 +711,43 @@ function setupHolo() {
       tgt.my = Math.cos(time * 0.45) * 0.35;
     }
     for (const k in cur) cur[k] += (tgt[k] - cur[k]) * 0.075;
-    card.style.setProperty('--rx', `${cur.rx.toFixed(2)}deg`);
-    card.style.setProperty('--ry', `${cur.ry.toFixed(2)}deg`);
+    // the card also turns as it travels up the screen
+    const r = holo.getBoundingClientRect();
+    const sp = clamp((r.top + r.height * 0.5 - window.innerHeight * 0.5) / window.innerHeight, -1, 1);
+    scrollTurn += (sp - scrollTurn) * 0.1;
+    card.style.setProperty('--rx', `${(cur.rx + scrollTurn * 9).toFixed(2)}deg`);
+    card.style.setProperty('--ry', `${(cur.ry - scrollTurn * 16).toFixed(2)}deg`);
     card.style.setProperty('--mx', cur.mx.toFixed(3));
     card.style.setProperty('--my', cur.my.toFixed(3));
     card.style.setProperty('--gx', `${(50 + cur.mx * 45).toFixed(1)}%`);
     card.style.setProperty('--gy', `${(30 + cur.my * 45).toFixed(1)}%`);
+  });
+}
+
+/* --------------------------------------------------------------------------
+   Skill cards — tilt toward the pointer, inner layers drift against it
+   -------------------------------------------------------------------------- */
+function setupTiltCards() {
+  if (!finePointer || reduced) return;
+  $$('[data-tilt-card]').forEach((card) => {
+    gsap.set(card, { transformPerspective: 900 });
+    const toX = gsap.quickTo(card, 'rotationX', { duration: 0.9, ease: 'power3.out' });
+    const toY = gsap.quickTo(card, 'rotationY', { duration: 0.9, ease: 'power3.out' });
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 2 - 1;
+      const y = ((e.clientY - r.top) / r.height) * 2 - 1;
+      toX(-y * 10);
+      toY(x * 12);
+      card.style.setProperty('--px', x.toFixed(3));
+      card.style.setProperty('--py', y.toFixed(3));
+    });
+    card.addEventListener('pointerleave', () => {
+      toX(0);
+      toY(0);
+      card.style.setProperty('--px', '0');
+      card.style.setProperty('--py', '0');
+    });
   });
 }
 
@@ -514,7 +765,7 @@ function setupSphere() {
 /* --------------------------------------------------------------------------
    Work — pinned 3D carousel driven by scroll (desktop), swipe strip (mobile)
    -------------------------------------------------------------------------- */
-function setupWork() {
+function setupWork(lenis) {
   const feature = $('.feature');
   const stage = $('.feature__stage');
   const carousel = $('.carousel');
@@ -537,6 +788,7 @@ function setupWork() {
     let shown = 0;
     let active = -1;
     let inView = false;
+    let lean = 0;
 
     // switch the static row of phones into the 3D carousel
     feature.classList.add('is-3d');
@@ -575,7 +827,10 @@ function setupWork() {
     const tick = () => {
       if (!inView && Math.abs(target - shown) < 0.0005) return;
       shown += (target - shown) * 0.1;
-      carousel.style.transform = `translateZ(${-radius}px) rotateY(${(-shown * STEP).toFixed(3)}deg)`;
+      // the ring leans back into fast scrolls and settles when they stop
+      lean += (clamp((lenis ? lenis.velocity : 0) * 0.12, -7, 7) - lean) * 0.08;
+      carousel.style.transform =
+        `rotateX(${lean.toFixed(2)}deg) translateZ(${-radius}px) rotateY(${(-shown * STEP).toFixed(3)}deg)`;
       phones.forEach((p, i) => {
         const d = Math.abs(i - shown);
         p.style.opacity = clamp(1.3 - d * 0.55, 0, 1).toFixed(3);
@@ -861,6 +1116,9 @@ function setupFooter() {
   if (reduced) return;
   gsap.from($$('span', mark), {
     yPercent: 100,
+    rotationX: -80,
+    transformPerspective: 900,
+    transformOrigin: '50% 100%',
     duration: 1.5,
     ease: 'expo.out',
     stagger: 0.12,

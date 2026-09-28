@@ -132,6 +132,7 @@ main[tabindex="-1"]:focus { outline: none; }
   gap: 12px;
   font-family: var(--f-mono);
   font-size: 12px;
+  font-weight: 400;
   line-height: 1;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -910,6 +911,171 @@ main,
 }
 
 /* ---------------------------------------------------------------------------
+   9b. Approach — flight through depth
+   Default (no JS, reduced motion): a numbered manifesto list.
+   Enhanced (.is-3d): the section pins and scrolling flies the camera through
+   the principles, each set deeper into the screen inside its own portal frame.
+   --------------------------------------------------------------------------- */
+.depth {
+  position: relative;
+  padding-block: calc(var(--section-y) * 0.45) calc(var(--section-y) * 0.6);
+}
+.depth__stage { position: relative; }
+.depth__hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+.depth__count {
+  display: none;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+.depth__current { color: var(--text); }
+.depth__list {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: clamp(32px, 4vw, 56px) auto 0;
+  padding-inline: var(--pad);
+}
+.depth__item {
+  display: grid;
+  grid-template-columns: minmax(56px, 120px) minmax(0, 1fr);
+  grid-template-areas: "idx title" ". text";
+  column-gap: clamp(16px, 3vw, 48px);
+  row-gap: 10px;
+  align-items: baseline;
+  padding-block: clamp(22px, 3vw, 40px);
+  border-top: 1px solid var(--line);
+}
+.depth__item:last-child { border-bottom: 1px solid var(--line); }
+.depth__idx {
+  grid-area: idx;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--crimson);
+}
+.depth__title {
+  grid-area: title;
+  font-size: clamp(38px, 6.2vw, 108px);
+  font-weight: 800;
+  font-stretch: 118%;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.depth__title .serif {
+  font-size: 1.1em;
+  line-height: 0.8;
+  color: var(--crimson);
+  padding-right: 0.04em;
+}
+.depth__text {
+  grid-area: text;
+  max-width: 44ch;
+  font-size: clamp(16px, 1.3vw, 20px);
+  color: var(--text-2);
+}
+.depth__frames,
+.depth__bar { display: none; }
+
+.depth.is-3d { height: 100vh; padding: 0; }
+.depth.is-3d .depth__stage {
+  height: 100vh;
+  overflow: hidden;
+}
+.depth.is-3d .depth__stage::before {
+  /* dark core so the copy stays legible over the particle tunnel */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(42% 38% at 50% 52%, rgba(7, 7, 10, 0.62), rgba(7, 7, 10, 0) 72%);
+  pointer-events: none;
+}
+.depth.is-3d .depth__hud {
+  position: absolute;
+  inset: calc(var(--header-h) + 6px) 0 auto;
+  z-index: 3;
+}
+.depth.is-3d .depth__count { display: block; }
+.depth.is-3d .depth__list,
+.depth.is-3d .depth__frames {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  perspective: 1000px;
+  perspective-origin: 50% 50%;
+  pointer-events: none;
+}
+.depth.is-3d .depth__frames { display: block; z-index: 0; }
+.depth.is-3d .depth__item {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(1180px, 90vw);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "idx" "title" "text";
+  justify-items: center;
+  row-gap: clamp(12px, 1.6vw, 22px);
+  padding: 0;
+  border: 0;
+  text-align: center;
+  translate: -50% -50%;
+  visibility: hidden;
+  backface-visibility: hidden;
+}
+.depth.is-3d .depth__title { font-size: clamp(42px, 8.2vw, 150px); }
+.depth.is-3d .depth__text { font-size: clamp(16px, 1.45vw, 22px); }
+.depth__frames i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(86vw, 1480px);
+  height: 70vh;
+  border-radius: 28px;
+  box-shadow: inset 0 0 0 1px rgba(242, 239, 233, 0.12);
+  translate: -50% -50%;
+  visibility: hidden;
+}
+.depth__frames i::before,
+.depth__frames i::after {
+  content: "";
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  border: 0 solid var(--crimson);
+}
+.depth__frames i::before { left: 0; top: 0; border-width: 2px 0 0 2px; border-top-left-radius: 28px; }
+.depth__frames i::after { right: 0; bottom: 0; border-width: 0 2px 2px 0; border-bottom-right-radius: 28px; }
+.depth.is-3d .depth__bar {
+  position: absolute;
+  z-index: 3;
+  display: block;
+  bottom: 30px;
+  bottom: calc(100vh - 100svh + 26px); /* clear of mobile browser toolbars */
+  left: max(var(--pad), calc((100% - var(--maxw)) / 2 + var(--pad)));
+  right: max(var(--pad), calc((100% - var(--maxw)) / 2 + var(--pad)));
+  height: 1px;
+  background: var(--line-2);
+}
+.depth__bar span {
+  display: block;
+  height: 100%;
+  background: var(--crimson);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+/* ---------------------------------------------------------------------------
    10. About
    --------------------------------------------------------------------------- */
 .about { padding-block: calc(var(--section-y) * 0.6) calc(var(--section-y) * 0.7); }
@@ -1276,9 +1442,16 @@ main,
   border-radius: 14px;
   background: var(--surface-2);
   color: var(--text);
-  transition: background-color 0.4s, color 0.4s, transform 0.6s var(--ease-out);
+  transition: background-color 0.4s, color 0.4s, transform 0.6s var(--ease-out), translate 0.6s var(--ease-out);
 }
 .skill-card:hover .skill-card__icon { background: var(--crimson-fill); color: #fff; transform: rotate(-8deg) scale(1.05); }
+/* pointer tilt (JS): inner layers drift against the tilt for a sense of depth */
+.skill-card__icon,
+.skill-card__title,
+.skill-card .chips { translate: calc(var(--px, 0) * -7px) calc(var(--py, 0) * -7px); }
+.skill-card__title { translate: calc(var(--px, 0) * -11px) calc(var(--py, 0) * -11px); }
+.skill-card__title,
+.skill-card .chips { transition: translate 0.6s var(--ease-out); }
 .skill-card__title {
   margin-top: auto;
   font-size: clamp(24px, 2vw, 30px);
@@ -1826,6 +1999,9 @@ main,
 
   .skill-cards { grid-template-columns: 1fr; }
   .skill-card { min-height: 0; }
+
+  .depth__item { grid-template-columns: minmax(0, 1fr); grid-template-areas: "idx" "title" "text"; }
+  .depth__frames i { border-radius: 20px; height: 64vh; }
 
   .lab { grid-template-columns: 1fr; }
 

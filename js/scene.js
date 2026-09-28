@@ -1,9 +1,11 @@
 /* ==========================================================================
    Particle world
    One Points cloud that morphs between forms as the page scrolls:
-     terrain (the valley) → chinar leaf → drifting dust → globe → ring → FL. mark
+     terrain (the valley) → chinar leaf → warp tunnel → drifting dust → globe
+     → ring → FL. mark
    Every form is anchored to a DOM element carrying [data-shape], so the 3D
    shape travels with the section it belongs to instead of floating freely.
+   Forms follow each other in document order.
    ========================================================================== */
 import {
   Scene,
@@ -22,7 +24,7 @@ import {
   AdditiveBlending,
 } from './vendor/three.min.js';
 
-const SHAPES = { terrain: 0, leaf: 1, dust: 2, sphere: 3, ring: 4, logo: 5 };
+const SHAPES = { terrain: 0, leaf: 1, dust: 2, sphere: 3, ring: 4, logo: 5, tunnel: 6 };
 const CAM_Z = 10;
 const FOV = 35;
 const LOOK_Y = -0.9;
@@ -327,6 +329,9 @@ uniform float uScrollW;
 uniform float uDustSpread;
 uniform vec2 uMouse;
 uniform float uMouseForce;
+uniform float uTunnelZ;
+uniform vec3 uTunnelO;
+uniform mat3 uTunnelR;
 uniform vec3 uC1; uniform vec3 uC3; uniform vec3 uC4; uniform vec3 uC5;
 uniform float uS1; uniform float uS3; uniform float uS4; uniform float uS5;
 uniform mat3 uR1; uniform mat3 uR3; uniform mat3 uR4; uniform mat3 uR5;
@@ -373,6 +378,23 @@ vec3 dustPos() {
   return p;
 }
 
+// Warp tunnel around the camera's line of sight. Particles stream toward the
+// viewer as uTunnelZ advances with scroll: a third snap to rings, a fifth run
+// along rails, the rest fill the walls. Built in camera space, placed in world.
+vec3 tunnel(out float fade) {
+  float ringy = step(aRand.w, 0.34);
+  float rail = step(0.8, aRand.w);
+  float phase = mix(aRand.x, (floor(aRand.x * 22.0) + 0.5) / 22.0, ringy);
+  float s = fract(phase + uTunnelZ);
+  float depth = mix(80.0, 0.8, s);
+  float ang = mix(aRand.z, floor(aRand.z * 14.0) / 14.0, rail) * 6.2831853;
+  ang += depth * 0.016 + uTunnelZ * 1.6;
+  float rad = mix(2.9 + aRand.y * 2.8, 3.5 + (aRand.y - 0.5) * 0.08, ringy);
+  rad += sin(ang * 5.0 + depth * 0.2 + uTime * 0.4) * 0.12;
+  fade = (1.0 - smoothstep(38.0, 80.0, depth)) * smoothstep(0.8, 4.5, depth);
+  return uTunnelO + uTunnelR * vec3(cos(ang) * rad, sin(ang) * rad, -depth);
+}
+
 vec3 shapePos(int k, out float a, out float acc) {
   vec3 p = vec3(0.0);
   float member = 0.0;
@@ -383,6 +405,12 @@ vec3 shapePos(int k, out float a, out float acc) {
     p = terrain(fog);
     a = fog;
     acc = step(aRand.w, 0.035);
+    member = 1.0;
+  } else if (k == 6) {
+    float fade = 1.0;
+    p = tunnel(fade);
+    a = 0.9 * fade;
+    acc = step(fract(aRand.z * 13.7), 0.08);
     member = 1.0;
   } else if (k == 1) { member = aMask.x; acc = aAccent.x; p = uC1 + uR1 * (aLeaf * uS1); a = 0.8; }
   else if (k == 3) { member = aMask.y; acc = aAccent.y; p = uC3 + uR3 * (aSphere * uS3); a = 0.85; }
@@ -550,6 +578,9 @@ export function createScene({ canvas, gsap, reduced = false, small = false }) {
     uDustSpread: { value: 1 },
     uMouse: { value: new Vector2(9, 9) },
     uMouseForce: { value: 0 },
+    uTunnelZ: { value: 0 },
+    uTunnelO: { value: new Vector3(0, 0, CAM_Z) },
+    uTunnelR: { value: new Matrix3() },
     uC1: { value: new Vector3() }, uC3: { value: new Vector3() },
     uC4: { value: new Vector3() }, uC5: { value: new Vector3() },
     uS1: { value: 1 }, uS3: { value: 1 }, uS4: { value: 1 }, uS5: { value: 1 },
@@ -573,10 +604,10 @@ export function createScene({ canvas, gsap, reduced = false, small = false }) {
   scene.add(points);
 
   /* ---------- anchors ---------- */
+  // querySelectorAll returns document order, which is the order forms morph in
   const anchors = [...document.querySelectorAll('[data-shape]')]
     .map((el) => ({ el, shape: SHAPES[el.dataset.shape], rect: null, world: new Vector3() }))
-    .filter((a) => a.shape !== undefined)
-    .sort((a, b) => a.shape - b.shape);
+    .filter((a) => a.shape !== undefined);
   const heroAnchor = anchors.find((a) => a.shape === 0);
 
   /* ---------- state ---------- */
@@ -587,7 +618,10 @@ export function createScene({ canvas, gsap, reduced = false, small = false }) {
   const mouseSmooth = new Vector2(0, 0);
   let mouseActive = false;
   let agitate = 0;
+  let velocity = 0;
+  let roll = 0;
   let sphereMatrix = null;
+  let tunnelTravel = null;
   const tmp = new Vector3();
   const dir = new Vector3();
   const m4 = new Matrix4();
@@ -599,6 +633,11 @@ export function createScene({ canvas, gsap, reduced = false, small = false }) {
     const t = -camera.position.z / dir.z;
     return out.copy(camera.position).addScaledVector(dir, t);
   }
+
+  // the tunnel runs down the resting camera's line of sight, so its vanishing
+  // point sits in the middle of the screen; pointer drift adds parallax
+  m4.lookAt(new Vector3(0, 0, CAM_Z), new Vector3(0, LOOK_Y, 0), new Vector3(0, 1, 0));
+  uniforms.uTunnelR.value.setFromMatrix4(m4);
 
   function setRotation(target, x, y, z, order) {
     euler.set(x, y, z, order);
@@ -628,6 +667,9 @@ export function createScene({ canvas, gsap, reduced = false, small = false }) {
     camera.position.x = reduced ? 0 : mouseSmooth.x * 0.4;
     camera.position.y = reduced ? 0 : mouseSmooth.y * 0.22;
     camera.lookAt(0, LOOK_Y, 0);
+    // bank into fast scrolls like a camera on a rig
+    roll += ((reduced ? 0 : clamp(-velocity * 0.0011, -0.05, 0.05)) - roll) * 0.05;
+    camera.rotateZ(roll);
     camera.updateMatrixWorld();
 
     // where is each anchor on screen?
@@ -663,7 +705,7 @@ export function createScene({ canvas, gsap, reduced = false, small = false }) {
 
     // place each form on its anchor (kept loosely within the viewport)
     for (const a of anchors) {
-      if (a.shape === 0 || a.shape === 2) continue;
+      if (a.shape === 0 || a.shape === 2 || a.shape === 6) continue;
       const rc = a.rect;
       const cx = rc.left + rc.width * 0.5;
       const cyc = clamp(rc.top + rc.height * 0.5, -vh * 0.25, vh * 1.25);
@@ -688,8 +730,10 @@ export function createScene({ canvas, gsap, reduced = false, small = false }) {
       uniforms.uTerrainShift.value.set(0, -top * worldPerPx * 0.55, (-top / vh) * 5);
     }
     uniforms.uScrollW.value = window.scrollY * worldPerPx;
+    uniforms.uTunnelZ.value = (tunnelTravel ? tunnelTravel() * 0.42 : 0) + tt * 0.012;
 
     agitate *= 0.92;
+    velocity *= 0.9;
     uniforms.uAgitate.value = agitate;
     uniforms.uMouseForce.value += ((mouseActive && !reduced ? 1 : 0) - uniforms.uMouseForce.value) * 0.08;
 
@@ -717,9 +761,13 @@ export function createScene({ canvas, gsap, reduced = false, small = false }) {
     },
     setVelocity(v) {
       agitate = Math.max(agitate, Math.min(1, Math.abs(v) / 60));
+      velocity = v;
     },
     setSphereMatrix(fn) {
       sphereMatrix = fn;
+    },
+    setTunnelTravel(fn) {
+      tunnelTravel = fn;
     },
   };
 }

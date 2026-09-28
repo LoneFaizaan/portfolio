@@ -202,7 +202,7 @@
     <section class="intro" id="intro" aria-label="Introduction">
       <div class="wrap intro__grid">
         <p class="label" data-reveal><span class="label__idx">00</span>Intro</p>
-        <p class="intro__text" data-scrub-words>
+        <p class="intro__text" data-scrub-words data-drum>
           I'm a BSc IT student from <em class="accent">Kashmir</em> who learns by building &mdash; shipping real projects, sharpening practical skills, and understanding systems from the inside out. I care about <em class="serif">craft</em>, clean interfaces, and technology that solves <em class="serif">real</em> problems.
         </p>
         <div class="intro__leaf" data-shape="leaf" aria-hidden="true">
@@ -211,12 +211,51 @@
       </div>
     </section>
 
+    <!-- ============ APPROACH — scroll-driven flight through depth ============ -->
+    <section class="depth" id="approach" aria-labelledby="approach-title">
+      <div class="depth__stage" data-shape="tunnel" data-cursor="view">
+        <div class="depth__hud wrap">
+          <h2 class="label" id="approach-title"><span class="label__idx" aria-hidden="true">&#10022;</span>How I work</h2>
+          <p class="depth__count" aria-hidden="true"><span class="depth__current">01</span> / <span class="depth__total">05</span></p>
+        </div>
+        <ol class="depth__list">
+          <li class="depth__item" data-side="-1">
+            <span class="depth__idx">P&middot;01</span>
+            <h3 class="depth__title">Learn by <em class="serif">doing</em>.</h3>
+            <p class="depth__text">Hands on the tools instead of waiting to feel ready.</p>
+          </li>
+          <li class="depth__item" data-side="1">
+            <span class="depth__idx">P&middot;02</span>
+            <h3 class="depth__title">Solve <em class="serif">real</em> problems.</h3>
+            <p class="depth__text">Technology is only as good as the problem it solves.</p>
+          </li>
+          <li class="depth__item" data-side="-1">
+            <span class="depth__idx">P&middot;03</span>
+            <h3 class="depth__title">Ship, then <em class="serif">iterate</em>.</h3>
+            <p class="depth__text">Put it out, learn from it, make it better &mdash; repeat.</p>
+          </li>
+          <li class="depth__item" data-side="1">
+            <span class="depth__idx">P&middot;04</span>
+            <h3 class="depth__title">Know every <em class="serif">layer</em>.</h3>
+            <p class="depth__text">From the interface down to the infrastructure beneath it.</p>
+          </li>
+          <li class="depth__item" data-side="0">
+            <span class="depth__idx">P&middot;05</span>
+            <h3 class="depth__title">Care about <em class="serif">craft</em>.</h3>
+            <p class="depth__text">Clean interfaces, careful details, no shortcuts.</p>
+          </li>
+        </ol>
+        <div class="depth__frames" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="depth__bar" aria-hidden="true"><span></span></div>
+      </div>
+    </section>
+
     <!-- ============ ABOUT ============ -->
     <section class="about" id="about">
       <div class="wrap">
         <p class="label" data-reveal><span class="label__idx">01</span>About me</p>
 
-        <div class="about__grid">
+        <div class="about__grid" data-drum>
           <div class="about__visual" data-shape="dust">
             <div class="holo" data-tilt>
               <div class="holo__card">
@@ -252,7 +291,7 @@
           </div>
         </div>
 
-        <dl class="stats" data-stagger>
+        <dl class="stats" data-stagger data-drum>
           <div class="stat">
             <dt>Year &middot; BSc IT</dt>
             <dd><span data-count="2">2</span><sup>nd</sup></dd>
@@ -290,7 +329,7 @@
     <!-- ============ SKILLS ============ -->
     <section class="skills" id="skills">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head" data-drum>
           <p class="label" data-reveal><span class="label__idx">02</span>Skills &amp; tools</p>
           <h2 class="h2" data-split>Technologies I <em class="serif">work</em> with.</h2>
           <p class="section-sub" data-lines>Focused, practical, and always growing.</p>
@@ -318,8 +357,8 @@
             <p class="sphere__hint"><svg aria-hidden="true"><use href="#i-drag" /></svg>Drag to spin</p>
           </div>
 
-          <div class="skill-cards" data-stagger>
-            <article class="skill-card" data-spotlight>
+          <div class="skill-cards" data-stagger data-drum>
+            <article class="skill-card" data-spotlight data-tilt-card>
               <div class="skill-card__top">
                 <span class="skill-card__idx">01</span>
                 <svg class="skill-card__icon" aria-hidden="true"><use href="#i-code" /></svg>
@@ -329,7 +368,7 @@
                 <li>C</li><li>Java</li><li>Python</li>
               </ul>
             </article>
-            <article class="skill-card" data-spotlight>
+            <article class="skill-card" data-spotlight data-tilt-card>
               <div class="skill-card__top">
                 <span class="skill-card__idx">02</span>
                 <svg class="skill-card__icon" aria-hidden="true"><use href="#i-globe" /></svg>
@@ -339,7 +378,7 @@
                 <li>HTML &amp; CSS</li><li>JavaScript</li><li>Responsive Design</li>
               </ul>
             </article>
-            <article class="skill-card" data-spotlight>
+            <article class="skill-card" data-spotlight data-tilt-card>
               <div class="skill-card__top">
                 <span class="skill-card__idx">03</span>
                 <svg class="skill-card__icon" aria-hidden="true"><use href="#i-tool" /></svg>
@@ -349,7 +388,7 @@
                 <li>Docker</li><li>Git &amp; GitHub</li><li>VS Code</li><li>Linux</li>
               </ul>
             </article>
-            <article class="skill-card skill-card--hot" data-spotlight>
+            <article class="skill-card skill-card--hot" data-spotlight data-tilt-card>
               <div class="skill-card__top">
                 <span class="skill-card__idx">04</span>
                 <svg class="skill-card__icon" aria-hidden="true"><use href="#i-shield" /></svg>
@@ -367,7 +406,7 @@
     <!-- ============ WORK ============ -->
     <section class="work" id="projects">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head" data-drum>
           <p class="label" data-reveal><span class="label__idx">03</span>Selected work</p>
           <h2 class="h2" data-split>Things I've <em class="serif">built</em>.</h2>
           <p class="section-sub" data-lines>A growing set of hands-on builds where I design interfaces, shape user flows, and turn ideas into working products.</p>
@@ -435,7 +474,7 @@
         </div>
       </div>
 
-      <div class="wrap">
+      <div class="wrap" data-drum>
         <div class="lab" data-reveal data-spotlight>
           <p class="lab__term" aria-hidden="true"><span class="lab__prompt">~/faizaan</span> <span class="lab__cmd">git checkout -b next-project</span><span class="lab__caret"></span></p>
           <div class="lab__body">
@@ -455,7 +494,7 @@
       <div class="wrap">
         <p class="label" data-reveal><span class="label__idx">04</span>Contact</p>
 
-        <div class="contact__head">
+        <div class="contact__head" data-drum>
           <h2 class="contact__title" data-split>
             <span class="contact__line">Let's work</span>
             <span class="contact__line"><em class="serif">together</em><span class="contact__square" aria-hidden="true"></span></span>
@@ -474,7 +513,7 @@
           </button>
         </div>
 
-        <ul class="socials" data-stagger>
+        <ul class="socials" data-stagger data-drum>
           <li>
             <a href="mailto:faizanlone098@gmail.com" class="social">
               <svg class="social__icon" aria-hidden="true"><use href="#i-mail" /></svg>
